@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { nanoid } from 'nanoid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,30 @@ import { CommentsPanel } from '@/components/comments-panel';
 import { VideoState, Comment } from '@/lib/types';
 import { isValidVideoUrl } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+
+const STORAGE_PREFIX = 'video-comments-';
+
+function getStorageKey(url: string) {
+  return `${STORAGE_PREFIX}${url}`;
+}
+
+function loadCommentsFromStorage(url: string): Comment[] {
+  try {
+    const storedComments = localStorage.getItem(getStorageKey(url));
+    return storedComments ? JSON.parse(storedComments) : [];
+  } catch (error) {
+    console.error('Error loading comments from storage:', error);
+    return [];
+  }
+}
+
+function saveCommentsToStorage(url: string, comments: Comment[]) {
+  try {
+    localStorage.setItem(getStorageKey(url), JSON.stringify(comments));
+  } catch (error) {
+    console.error('Error saving comments to storage:', error);
+  }
+}
 
 export default function Home() {
   const { toast } = useToast();
@@ -17,6 +41,17 @@ export default function Home() {
     currentTime: 0,
     comments: []
   });
+
+  // Load comments when video URL changes
+  useEffect(() => {
+    if (videoState.url) {
+      const savedComments = loadCommentsFromStorage(videoState.url);
+      setVideoState(prev => ({
+        ...prev,
+        comments: savedComments
+      }));
+    }
+  }, [videoState.url]);
 
   const handleLoadVideo = () => {
     if (!isValidVideoUrl(urlInput)) {
@@ -31,7 +66,7 @@ export default function Home() {
     setVideoState(prev => ({
       ...prev,
       url: urlInput,
-      comments: []
+      comments: []  // Will be populated by useEffect
     }));
   };
 
@@ -43,10 +78,16 @@ export default function Home() {
       createdAt: new Date()
     };
 
-    setVideoState(prev => ({
-      ...prev,
-      comments: [...prev.comments, newComment]
-    }));
+    setVideoState(prev => {
+      const newComments = [...prev.comments, newComment];
+      if (prev.url) {
+        saveCommentsToStorage(prev.url, newComments);
+      }
+      return {
+        ...prev,
+        comments: newComments
+      };
+    });
   };
 
   const handleCommentClick = (timestamp: number) => {
