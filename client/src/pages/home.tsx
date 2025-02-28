@@ -9,6 +9,7 @@ import { isValidVideoUrl } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 const STORAGE_PREFIX = 'video-comments-';
+const LAST_URL_KEY = 'last-video-url';
 
 function getStorageKey(url: string) {
   return `${STORAGE_PREFIX}${url}`;
@@ -32,9 +33,17 @@ function saveCommentsToStorage(url: string, comments: Comment[]) {
   }
 }
 
+function getLastUrl(): string {
+  return localStorage.getItem(LAST_URL_KEY) || '';
+}
+
+function saveLastUrl(url: string) {
+  localStorage.setItem(LAST_URL_KEY, url);
+}
+
 export default function Home() {
   const { toast } = useToast();
-  const [urlInput, setUrlInput] = useState('');
+  const [urlInput, setUrlInput] = useState(getLastUrl());
   const [videoState, setVideoState] = useState<VideoState>({
     url: null,
     duration: 0,
@@ -53,6 +62,17 @@ export default function Home() {
     }
   }, [videoState.url]);
 
+  // Load last used URL on component mount
+  useEffect(() => {
+    const lastUrl = getLastUrl();
+    if (lastUrl && isValidVideoUrl(lastUrl)) {
+      setVideoState(prev => ({
+        ...prev,
+        url: lastUrl
+      }));
+    }
+  }, []);
+
   const handleLoadVideo = () => {
     if (!isValidVideoUrl(urlInput)) {
       toast({
@@ -63,10 +83,10 @@ export default function Home() {
       return;
     }
 
+    saveLastUrl(urlInput);
     setVideoState(prev => ({
       ...prev,
-      url: urlInput,
-      comments: []  // Will be populated by useEffect
+      url: urlInput
     }));
   };
 
@@ -80,6 +100,34 @@ export default function Home() {
 
     setVideoState(prev => {
       const newComments = [...prev.comments, newComment];
+      if (prev.url) {
+        saveCommentsToStorage(prev.url, newComments);
+      }
+      return {
+        ...prev,
+        comments: newComments
+      };
+    });
+  };
+
+  const handleEditComment = (id: string, text: string) => {
+    setVideoState(prev => {
+      const newComments = prev.comments.map(comment =>
+        comment.id === id ? { ...comment, text } : comment
+      );
+      if (prev.url) {
+        saveCommentsToStorage(prev.url, newComments);
+      }
+      return {
+        ...prev,
+        comments: newComments
+      };
+    });
+  };
+
+  const handleDeleteComment = (id: string) => {
+    setVideoState(prev => {
+      const newComments = prev.comments.filter(comment => comment.id !== id);
       if (prev.url) {
         saveCommentsToStorage(prev.url, newComments);
       }
@@ -124,6 +172,8 @@ export default function Home() {
                 comments={videoState.comments}
                 currentTime={videoState.currentTime}
                 onAddComment={handleAddComment}
+                onEditComment={handleEditComment}
+                onDeleteComment={handleDeleteComment}
                 onCommentClick={handleCommentClick}
               />
             </div>
