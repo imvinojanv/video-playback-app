@@ -1,0 +1,53 @@
+Here’s a detailed spec you can use for the AI code generator:  
+
+---
+
+### **Video Feedback Tool Specification**  
+
+#### **Overview**  
+Develop a web-based video feedback tool using the `video.js` library that allows users to:  
+- Load a video from a provided **public URL**  
+- Play the video in the browser  
+- Add **timestamped comments** at various points on the video timeline  
+- Click on a comment to **jump to the corresponding timestamp** in the video  
+
+#### **Requirements**  
+
+##### **1. Video Playback**  
+- Use **video.js** to embed and control video playback.  
+- Accept a **public video URL** as input and load it into the player.  
+- Ensure the video plays smoothly in modern browsers without additional dependencies.  
+
+##### **2. Timeline-based Commenting**  
+- Allow users to add comments tied to specific timestamps in the video.  
+- Display each comment in a list along with its timestamp.  
+- Clicking a comment should update the video’s play position to the associated timestamp.  
+
+##### **3. User Interface Layout**  
+- The UI should be **split into two sections**:  
+  - **Left Side:** Video player (using `video.js`).  
+  - **Right Side:** Comments panel displaying the timestamped comments.  
+
+##### **4. Comment Functionality**  
+- A simple text input field where users can type a comment.  
+- A button to **add the comment at the current video time**.  
+- Display comments in a list, showing the **timestamp** and text.  
+- Clicking a comment should **seek the video to the associated timestamp**.  
+
+##### **5. No Database or Backend**  
+- The tool should work **entirely on the frontend**.  
+- Comments should be stored in **browser memory (state management)**.  
+
+##### **6. UI Enhancements**  
+- Show timestamps in `MM:SS` format next to each comment.  
+- Highlight the currently active comment based on the video’s progress.  
+- Provide basic styling for readability and usability.  
+
+#### **Expected Behavior**  
+1. User provides a **public URL** of a video.  
+2. The video is loaded into the player.  
+3. As the video plays, users can **add comments** tied to timestamps.  
+4. Comments appear in a list on the right side of the screen.  
+5. Clicking on a comment will **seek the video to that timestamp**.  
+
+Let me know if you need any refinements! 🚀
