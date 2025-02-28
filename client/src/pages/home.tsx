@@ -113,7 +113,9 @@ export default function Home() {
   const handleEditComment = (id: string, text: string) => {
     setVideoState(prev => {
       const newComments = prev.comments.map(comment =>
-        comment.id === id ? { ...comment, text } : comment
+        comment.id === id 
+          ? { ...comment, text, editedAt: new Date() } 
+          : comment
       );
       if (prev.url) {
         saveCommentsToStorage(prev.url, newComments);

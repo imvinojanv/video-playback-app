@@ -74,8 +74,8 @@ export function CommentsPanel({
             key={comment.id}
             className={cn(
               "p-4 mb-2 cursor-pointer transition-colors",
-              Math.abs(currentTime - comment.timestamp) < 1 
-                ? "border-primary" 
+              Math.abs(currentTime - comment.timestamp) < 1
+                ? "border-primary"
                 : "hover:bg-accent"
             )}
             onClick={() => onCommentClick(comment.timestamp)}
@@ -93,8 +93,8 @@ export function CommentsPanel({
                       className="flex-1"
                       onClick={(e) => e.stopPropagation()}
                     />
-                    <Button 
-                      size="icon" 
+                    <Button
+                      size="icon"
                       variant="ghost"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -103,8 +103,8 @@ export function CommentsPanel({
                     >
                       <Check className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      size="icon" 
+                    <Button
+                      size="icon"
                       variant="ghost"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -116,9 +116,12 @@ export function CommentsPanel({
                   </div>
                 ) : (
                   <>
-                    <p className="text-sm">{comment.text}</p>
+                    <p className="text-sm">
+                      {comment.text}
+                      {comment.editedAt && <span className="text-xs text-muted-foreground ml-1">(edited)</span>}
+                    </p>
                     <p className="text-xs text-muted-foreground mt-1">
-                      {formatRelativeTime(new Date(comment.createdAt))}
+                      {formatRelativeTime(new Date(comment.editedAt || comment.createdAt))}
                     </p>
                   </>
                 )}

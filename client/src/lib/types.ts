@@ -3,6 +3,7 @@ export interface Comment {
   timestamp: number; // In seconds
   text: string;
   createdAt: Date;
+  editedAt?: Date; // Optional edit timestamp
 }
 
 export interface VideoState {
