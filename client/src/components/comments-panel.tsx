@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Card } from '@/components/ui/card';
 import { Comment } from '@/lib/types';
-import { formatTimestamp } from '@/lib/utils';
+import { formatTimestamp, cn } from '@/lib/utils';
 
 interface CommentsPanelProps {
   comments: Comment[];
@@ -42,7 +42,7 @@ export function CommentsPanel({
           <Button type="submit">Add</Button>
         </form>
       </div>
-      
+
       <ScrollArea className="flex-1 p-4">
         {comments.sort((a, b) => a.timestamp - b.timestamp).map((comment) => (
           <Card
